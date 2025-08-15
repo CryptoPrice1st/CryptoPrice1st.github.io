@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Crypto Prices | Top 200 Coins</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --card-bg: #1e293b;
+            --header-bg: #0c1220;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --positive: #10b981;
+            --negative: #ef4444;
+            --accent: #6366f1;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            background-image: 
+                radial-gradient(at 47% 33%, rgba(30, 41, 59, 0.4) 0, transparent 59%), 
+                radial-gradient(at 82% 65%, rgba(15, 23, 42, 0.8) 0, transparent 55%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--accent), #4f46e5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #c7d2fe, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .refresh-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .refresh-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .grid-header {
+            display: grid;
+            grid-template-columns: 50px 200px 1fr 1fr 1fr 1fr;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .coins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .coin-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .coin-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .coin-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .coin-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 22px;
+            color: var(--accent);
+        }
+
+        .coin-name {
+            flex: 1;
+        }
+
+        .coin-name h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .coin-name span {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .coin-price {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .coin-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .change {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .change.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--positive);
+        }
+
+        .change.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--negative);
+        }
+
+        .sparkline {
+            height: 60px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .sparkline canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .update-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .update-indicator .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--positive);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .grid-header {
+                display: none;
+            }
+            
+            .stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h1>CryptoLive Tracker</h1>
+            </div>
+            <div class="update-indicator">
+                <div class="dot"></div>
+                <span>Live prices updating...</span>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <i class="fas fa-coins"></i>
+                    <span>Coins: <span class="stat-value" id="total-coins">200</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Updated: <span class="stat-value" id="last-updated">Just now</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Pairs: <span class="stat-value" id="total-pairs">200</span></span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search coins...">
+            </div>
+            <button class="refresh-btn" id="refresh-btn">
+                <i class="fas fa-sync-alt"></i>
+                Refresh Prices
+            </button>
+        </div>
+        
+        <div class="grid-header">
+            <div>#</div>
+            <div>Coin</div>
+            <div>Price</div>
+            <div>24h Change</div>
+            <div>Volume (24h)</div>
+            <div>Last 7 Days</div>
+        </div>
+        
+        <div class="coins-grid" id="coins-container">
+            <!-- Coin cards will be generated here -->
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading cryptocurrency data...
+            </div>
+        </div>
+        
+        <footer>
+            <p>Live cryptocurrency prices from Binance API • Updates every minute</p>
+            <p>Data provided for informational purposes only</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize with mock data for demonstration
+        let coinsData = [];
+        
+        // Function to generate mock data
+        function generateMockData() {
+            const coins = [];
+            const coinNames = [
+                "Bitcoin", "Ethereum", "Binance Coin", "Cardano", "Solana", 
+                "Ripple", "Polkadot", "Dogecoin", "Avalanche", "Polygon",
+                "Litecoin", "Chainlink", "Stellar", "Bitcoin Cash", "Algorand",
+                "Uniswap", "VeChain", "Cosmos", "Filecoin", "TRON"
+            ];
+            
+            const symbols = [
+                "BTC", "ETH", "BNB", "ADA", "SOL", 
+                "XRP", "DOT", "DOGE", "AVAX", "MATIC",
+                "LTC", "LINK", "XLM", "BCH", "ALGO",
+                "UNI", "VET", "ATOM", "FIL", "TRX"
+            ];
+            
+            for (let i = 0; i < 200; i++) {
+                const nameIndex = i % coinNames.length;
+                const price = (Math.random() * 100000).toFixed(2);
+                const change = (Math.random() * 20 - 10).toFixed(2);
+                const volume = (Math.random() * 1000000000).toFixed(0);
+                
+                coins.push({
+                    id: i + 1,
+                    name: coinNames[nameIndex],
+                    symbol: symbols[nameIndex],
+                    price: parseFloat(price),
+                    change: parseFloat(change),
+                    volume: parseInt(volume),
+                    sparkline: Array.from({length: 20}, () => Math.random() * 100)
+                });
+            }
+            
+            return coins;
+        }
+        
+        // Function to render coin cards
+        function renderCoins(coins) {
+            const container = document.getElementById('coins-container');
+            if (!coins || coins.length === 0) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-exclamation-circle"></i>No cryptocurrency data available</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            coins.forEach(coin => {
+                const changeClass = coin.change >= 0 ? 'positive' : 'negative';
+                const changeIcon = coin.change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                
+                const card = document.createElement('div');
+                card.className = 'coin-card';
+                card.innerHTML = `
+                    <div class="coin-header">
+                        <div class="coin-icon">
+                            <i class="fab fa-${coin.symbol.toLowerCase()}"></i>
+                        </div>
+                        <div class="coin-name">
+                            <h3>${coin.name}</h3>
+                            <span>${coin.symbol}</span>
+                        </div>
+                        <div class="coin-price">$${coin.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    </div>
+                    
+                    <div class="coin-stats">
+                        <div class="stat">
+                            <div class="stat-label">24h Change</div>
+                            <div class="stat-value">
+                                <span class="change ${changeClass}">
+                                    <i class="fas ${changeIcon}"></i> ${Math.abs(coin.change)}%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Volume (24h)</div>
+                            <div class="stat-value">$${coin.volume.toLocaleString('en-US')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sparkline">
+                        <canvas id="sparkline-${coin.id}"></canvas>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+                
+                // Draw sparkline
+                setTimeout(() => {
+                    drawSparkline(`sparkline-${coin.id}`, coin.sparkline, coin.change >= 0);
+                }, 100);
+            });
+        }
+        
+        // Function to draw sparkline chart
+        function drawSparkline(canvasId, data, isPositive) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Calculate points
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min;
+            const step = width / (data.length - 1);
+            
+            // Draw area
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+            
+            for (let i = 0; i < data.length; i++) {
+                const x = i * step;
+                const y = height - ((data[i] - min) / range * height);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.lineTo(width, height);
+            ctx.closePath();
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, isPositive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)');
+            gradient.addColorStop(1, isPositive ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)');
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Draw line
+            ctx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = i * step;
+                const y = height - ((data[i] - min) / range * height);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = isPositive ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)';
+            ctx.stroke();
+        }
+        
+        // Function to update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('last-updated').textContent = timeString;
+        }
+        
+        // Function to simulate live updates
+        function updatePrices() {
+            coinsData.forEach(coin => {
+                // Simulate price change
+                const change = (Math.random() * 2 - 1) / 2;
+                coin.price = parseFloat((coin.price * (1 + change / 100)).toFixed(2));
+                
+                // Update change percentage
+                coin.change = parseFloat((coin.change + (Math.random() * 0.4 - 0.2)).toFixed(2));
+                
+                // Update volume
+                coin.volume = parseInt(coin.volume + (Math.random() * 1000000 - 500000));
+                
+                // Update sparkline data
+                coin.sparkline.shift();
+                coin.sparkline.push(coin.sparkline[coin.sparkline.length - 1] * (1 + (Math.random() - 0.5) / 10));
+            });
+            
+            // Re-render coins
+            renderCoins(coinsData);
+            updateTime();
+        }
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            coinsData = generateMockData();
+            renderCoins(coinsData);
+            updateTime();
+            
+            // Set up live updates
+            setInterval(updatePrices, 60000); // Update every minute
+            
+            // Set up refresh button
+            document.getElementById('refresh-btn').addEventListener('click', updatePrices);
+            
+            // Set up search functionality
+            document.getElementById('search-input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredCoins = coinsData.filter(coin => 
+                    coin.name.toLowerCase().includes(searchTerm) || 
+                    coin.symbol.toLowerCase().includes(searchTerm)
+                );
+                renderCoins(filteredCoins);
+            });
+        }
+        
+        // Start when page loads
+        window.addEventListener('load', initDashboard);
+    </script>
+</body>
+</html>
